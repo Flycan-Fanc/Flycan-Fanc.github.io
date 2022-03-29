@@ -1,81 +1,61 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>{{ site.title }}</title>
-		<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="author" content="{{ site.author.name }}">
-		<meta name="description" content="{{ site.description }}">
-		<meta http-equiv="content-language" content="{{ site.locale }}" />
-		<meta name="generator" content="Jekyll v{{ jekyll.version }}">
+---
+# Copyright (c) 2017 Florian Klampfer <https://qwtel.com/>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
-		<!--[if lte IE 8]><script src="/js/ie/html5shiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" type="text/css">
-		<link rel="stylesheet" href="/css/main.css">
-		<!--[if lte IE 8]><link rel="stylesheet" href="/css/ie8.css" /><![endif]-->
+layout: base
+---
 
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" href="/touch-icon.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="/images/favicon.png">
+{% assign strings = site.data.strings %}
 
-    {% seo %}
-    {% feed_meta %}
+<article class="page" role="article">
+  <header>
+    <h1 class="page-title">{{ page.title | default:strings.home | default:"Home" }}</h1>
+    {% include message.html text=page.description hide=page.hide_description %}
+  </header>
 
-	</head>
+  {{ content }}
 
-	<body id="top">
-    <header id="header">
-      <a href="{{ site.url }}" class="image avatar"><img class="editable" src="/images/avatar.jpg" alt="{{ site.author.name }}"></a>
-      <h1 class="editable"><strong>I am <a href="/">Strata Reloaded</a></strong>, a super simple<br>
-      responsive site template freebie<br>
-      adapted by <a href="http://comfusionllc.com">Comfusion LLC</a>.</h1>
-    </header>
+  <hr class="dingbat"/>
 
-    {{ content }}
+  {% if site.posts.size > 0 %}
+    <h2 class="hr">{{ strings.posts | default:"Posts" }}</h2>
+    <ul class="related-posts">
+      {% for post in site.posts limit:5 %}
+        {% include post-list-item.html post=post %}
+      {% endfor %}
+    </ul>
+  {% endif %}
 
-    <footer id="footer">
-      <p class="editor-link"><a href="cloudcannon:collections/_data/social.yml" class="button"><strong>&#9998;</strong> Update Social Icons</a></p>
-      <ul class="icons">
-        {% for account in site.data.social %}
-					<li>
-						<a {% if account.new_window %}target="_blank"{% endif %} href="{% include relative-src.html src=account.link %}" {% if account.social_icon %}class="icon fa-{{ account.social_icon | slugify }}"{% endif %}>
-              <span class="label">{{ account.name }}</span>
-						</a>
-					</li>
-				{% endfor %}
-        {% if site.author.email %}
-        <li>
-          <a href="mailto:{{ site.author.email }}" class="icon fa-envelope-o">
-            <span class="label">Email</span>
-          </a>
-        </li>
+  {% assign pages = site.html_pages | where:"layout","page" | where_exp:"page","page.sitemap != false" %}
+  {% if pages.size > 0 %}
+    <h2 class="hr">{{ strings.pages | default:"Pages" }}</h2>
+    <ul class="related-posts">
+      {% for page in pages limit:5 %}
+        {% if page.layout == 'page' %}
+          <li class="h4">
+            <a href="{{ page.url | relative_url }}" class="flip-title">
+              <span>{{ page.title }}</span>
+            </a>
+          </li>
         {% endif %}
-      </ul>
-      <ul class="copyright">
-          <li>&copy; Untitled</li>
-          <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-          <li>Theme: <a href="http://comfusionllc.com">Comfusion LLC</a></li>
-      </ul>
-    </footer>
-
-		<script src="/js/jquery.min.js"></script>
-		<script src="/js/jquery.poptrox.min.js"></script>
-		<script src="/js/skel.min.js"></script>
-		<script src="/js/util.js"></script>
-		<!--[if lte IE 8]><script src="/js/ie/respond.min.js"></script><![endif]-->
-		<script src="/js/main.js"></script>
-
-		{% if jekyll.environment == 'production' and site.google_analytics_key != '' %}
-			<script>
-				(function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
-				(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-				m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,"script","//www.google-analytics.com/analytics.js","ga");
-
-				ga("create", "{{ site.google_analytics_key }}", "auto");
-				ga("send", "pageview");
-			</script>
-		{% endif %}
-
-	</body>
-</html>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</article>
